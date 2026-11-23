@@ -1,0 +1,29 @@
+name: Build MacroMagi for macOS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Récupérer le code source
+        uses: actions/checkout@v4
+
+      - name: Installer Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Compiler MacroMagi
+        run: cargo build --release
+
+      - name: Préparer l'exécutable
+        run: |
+          mkdir -p dist
+          find target/release -maxdepth 1 -type f -perm +111 -exec cp {} dist/ \;
+
+      - name: Mettre le fichier à disposition
+        uses: actions/upload-artifact@v4
+        with:
+          name: MacroMagi-macOS
+          path: dist/
